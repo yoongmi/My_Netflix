@@ -1,14 +1,19 @@
-import { Link } from "react-router-dom";
+import { Link, useMatch } from "react-router-dom";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import styled from "styled-components";
 import { ThemeAtom } from "../atom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLightbulb, faMoon } from "@fortawesome/free-solid-svg-icons";
+import { motion } from "framer-motion";
 
 const Header = () => {
   const themeState = useRecoilValue(ThemeAtom);
   const themeSetState = useSetRecoilState(ThemeAtom);
   const themeChange = () => themeSetState((prev) => !prev);
+  const homeMatch = useMatch("/");
+  const movieMatch = useMatch("/movie");
+  const tvMatch = useMatch("/tv");
+  const searchMatch = useMatch("/search");
   return (
     <Navigator>
       <Nav>
@@ -16,12 +21,24 @@ const Header = () => {
           <img src="/logo.png" alt="logo" />
         </h1>
         <ul>
-          <li>
-            <Link to="/">home</Link>
-          </li>
-          <li>
-            <Link to="/movie">Movie</Link>
-          </li>
+          <Li isActive={homeMatch !== null}>
+            <Link to="/">home{homeMatch && <Circle layoutId="circle" />}</Link>
+          </Li>
+          <Li isActive={movieMatch !== null}>
+            <Link to="/movie">
+              Movie{movieMatch && <Circle layoutId="circle" />}
+            </Link>
+          </Li>
+          <Li isActive={tvMatch !== null}>
+            <Link to="/tv">
+              Tv program{tvMatch && <Circle layoutId="circle" />}
+            </Link>
+          </Li>
+          <Li isActive={searchMatch !== null}>
+            <Link to="/search">
+              Search{searchMatch && <Circle layoutId="circle" />}
+            </Link>
+          </Li>
         </ul>
       </Nav>
       <ThemeBtn onClick={themeChange}>
@@ -40,7 +57,7 @@ const Navigator = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px;
+  padding: 10px 20px;
   box-sizing: border-box;
   background-color: ${(props) => props.theme.point};
   color: ${(props) => props.theme.pointtxt};
@@ -49,14 +66,23 @@ const Nav = styled.nav`
   display: flex;
   justify-content: center;
   align-items: center;
+  h1 img {
+    width: 100px;
+  }
   ul {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-left: 10px;
-    li {
-      padding: 10px;
-    }
+    margin-left: 20px;
+  }
+`;
+const Li = styled.li<{ isActive: boolean }>`
+  position: relative;
+  font-weight: bold;
+  color: ${(props) => (props.isActive ? "#009688" : "")};
+  transition: all 0.3s;
+  a {
+    padding: 10px;
   }
 `;
 const ThemeBtn = styled.span`
@@ -68,8 +94,18 @@ const ThemeBtn = styled.span`
   display: flex;
   justify-content: center;
   align-items: center;
+  font-size: 20px;
   .bright {
     color: ${(props) => props.theme.point};
   }
+`;
+const Circle = styled(motion.span)`
+  position: absolute;
+  left: 10px;
+  top: -10px;
+  width: 5px;
+  height: 5px;
+  background-color: #009688;
+  border-radius: 50%;
 `;
 export default Header;

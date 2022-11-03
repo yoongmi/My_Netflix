@@ -3,7 +3,6 @@ import { darkTheme, lightTheme } from "./theme";
 import HomeRouter from "./components/router";
 import { useRecoilValue } from "recoil";
 import { ThemeAtom } from "./atom";
-import Header from "./routes/Header";
 
 function App() {
   const isTheme = useRecoilValue(ThemeAtom);
