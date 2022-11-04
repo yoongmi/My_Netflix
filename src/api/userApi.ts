@@ -1,0 +1,8 @@
+const API_URL = "https://api.themoviedb.org/3";
+
+export const movieData = async () => {
+  const data = await fetch(
+    `${API_URL}/movie/popular?api_key=${process.env.REACT_APP_API_KEY}`
+  );
+  return await data.json();
+};
