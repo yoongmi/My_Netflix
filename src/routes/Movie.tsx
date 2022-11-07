@@ -7,10 +7,14 @@ import { faPlay, faCircleInfo } from "@fortawesome/free-solid-svg-icons";
 import { ImgMakeSrc } from "../utils";
 import { movieData } from "../api/userApi";
 import { Imovies } from "../interface/userInterface";
+import Slider from "../components/Slider";
 
 const Movie = () => {
-  const { data, isLoading } = useQuery<Imovies>(["movie"], () => movieData());
-  console.log(data);
+  const { data: popularData, isLoading } = useQuery<Imovies>(
+    ["movie", "popular"],
+    () => movieData()
+  );
+  console.log(popularData);
   return (
     <>
       {isLoading ? (
@@ -20,10 +24,13 @@ const Movie = () => {
       ) : (
         <>
           <Banner
-            bgImg={ImgMakeSrc(data?.results[0].backdrop_path || "", "original")}
+            bgImg={ImgMakeSrc(
+              popularData?.results[0].backdrop_path || "",
+              "original"
+            )}
           >
-            <h3>{data?.results[0].title}</h3>
-            <p>{data?.results[0].overview}</p>
+            <h3>{popularData?.results[0].title}</h3>
+            <p>{popularData?.results[0].overview}</p>
             <button>
               <FontAwesomeIcon icon={faPlay} />
               Play
@@ -33,20 +40,10 @@ const Movie = () => {
               Detail
             </button>
           </Banner>
-          <ListBox>
-            {data?.results.map((movie) => (
-              <List
-                bgImg={ImgMakeSrc(movie.poster_path, "w500")}
-                key={movie.id}
-              >
-                <h4>{movie.title}</h4>
-                <p>{movie.overview}</p>
-                <p>{movie.release_date}</p>
-                <p>{movie.original_language}</p>
-                <p>{movie.vote_average}</p>
-              </List>
-            ))}
-          </ListBox>
+          <Slider
+            title="가장 인기있는 영화"
+            content={popularData ? popularData.results : []}
+          />
         </>
       )}
     </>
@@ -57,14 +54,5 @@ const Banner = styled.div<{ bgImg: string }>`
   height: 500px;
   background-image: url(${(props) => props.bgImg});
   background-size: cover;
-`;
-const ListBox = styled.ul`
-  display: flex;
-  flex-wrap: wrap;
-`;
-const List = styled.li<{ bgImg: string }>`
-  width: 400px;
-  height: 400px;
-  background-image: url(${(props) => props.bgImg});
 `;
 export default Movie;
