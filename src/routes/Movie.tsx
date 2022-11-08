@@ -51,7 +51,8 @@ const Movie = () => {
 };
 const Banner = styled.div<{ bgImg: string }>`
   width: 100%;
-  height: 500px;
+  height: calc(100vh - 300px);
+  margin-bottom: 30px;
   background-image: url(${(props) => props.bgImg});
   background-size: cover;
 `;
