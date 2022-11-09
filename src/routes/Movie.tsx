@@ -14,7 +14,6 @@ const Movie = () => {
     ["movie", "popular"],
     () => movieData()
   );
-  console.log(popularData);
   return (
     <>
       {isLoading ? (

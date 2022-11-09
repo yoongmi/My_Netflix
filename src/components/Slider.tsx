@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import styled from "styled-components";
 import { motion, AnimatePresence } from "framer-motion";
 // icon
@@ -9,12 +9,38 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 // 가져오는 data
 import { ImgMakeSrc } from "../utils";
-import { Imovie } from "../interface/userInterface";
+import { Imovie, ImovieDetail } from "../interface/userInterface";
+import { useMatch, useNavigate } from "react-router-dom";
+import { useQuery } from "react-query";
+import { movieDetail } from "../api/userApi";
 
 interface IlistProps {
   content: Imovie[];
   title: string;
 }
+
+const slideVariants = {
+  hidden: (slideDirection: number) => ({
+    x: slideDirection > 0 ? window.outerWidth : -window.outerWidth,
+  }),
+  visible: {
+    x: 0,
+  },
+  exit: (slideDirection: number) => ({
+    x: slideDirection > 0 ? -window.outerWidth : window.outerWidth,
+  }),
+};
+
+const listVariants = {
+  normal: {
+    scale: 1,
+  },
+  hover: {
+    scale: 1.5,
+    zIndex: 1,
+    transition: { delay: 0.3, type: "tween", duration: 0.5 },
+  },
+};
 
 const Slider = ({ content, title }: IlistProps) => {
   //슬라이드 구현
@@ -37,17 +63,6 @@ const Slider = ({ content, title }: IlistProps) => {
     slideToggle();
   };
 
-  const slideVariants = {
-    hidden: (slideDirection: number) => ({
-      x: slideDirection > 0 ? window.outerWidth : -window.outerWidth,
-    }),
-    visible: {
-      x: 0,
-    },
-    exit: (slideDirection: number) => ({
-      x: slideDirection > 0 ? -window.outerWidth : window.outerWidth,
-    }),
-  };
   let pagination: number[] = [];
   const pager = () => {
     for (let i = 0; i < slidePage + 1; i++) {
@@ -56,8 +71,21 @@ const Slider = ({ content, title }: IlistProps) => {
     return pagination;
   };
   pager();
-  console.log(pagination);
 
+  //팝업
+  const history = useNavigate();
+  const popupMatch = useMatch(`/movie/:movieId`);
+  const popuphandle = (movieId: number) => {
+    history(`/movie/${movieId}`);
+  };
+  const popupClose = () => {
+    history(`/movie`);
+  };
+
+  const popupMovie =
+    popupMatch?.params.movieId &&
+    content.find((movie) => String(movie.id) === popupMatch.params.movieId);
+  console.log(content.find((movie) => String(movie.id) === "436270"));
   return (
     <Container>
       <Title>
@@ -94,6 +122,11 @@ const Slider = ({ content, title }: IlistProps) => {
                 <List
                   bgimg={ImgMakeSrc(movie.backdrop_path, "w500")}
                   key={movie.id}
+                  variants={listVariants}
+                  initial="normal"
+                  whileHover="hover"
+                  onClick={() => popuphandle(movie.id)}
+                  layoutId={movie.id + ""}
                 >
                   <h4>{movie.title}</h4>
                 </List>
@@ -107,11 +140,35 @@ const Slider = ({ content, title }: IlistProps) => {
           <FontAwesomeIcon icon={faChevronRight} />
         </BtnRight>
       </SlideBox>
+      <AnimatePresence>
+        {popupMatch && (
+          <>
+            <Overlay
+              onClick={popupClose}
+              animate={{ opacity: 0.4 }}
+              exit={{ opacity: 0 }}
+            />
+            <Popup layoutId={popupMatch.params.movieId + ""}>
+              {popupMovie && (
+                <PopupInner
+                  bgimg={ImgMakeSrc(popupMovie.backdrop_path, "original")}
+                >
+                  <img
+                    src={ImgMakeSrc(popupMovie.poster_path, "w500")}
+                    alt={popupMovie.title}
+                  />
+                  <h3>{popupMovie.title}</h3>
+                </PopupInner>
+              )}
+            </Popup>
+          </>
+        )}
+      </AnimatePresence>
     </Container>
   );
 };
+
 const Container = styled.div`
-  overflow: hidden;
   padding: 0 50px;
   box-sizing: border-box;
   margin-bottom: 10px;
@@ -158,12 +215,6 @@ const ListBox = styled(motion.ul)`
   display: grid;
   gap: 10px;
   grid-template-columns: repeat(5, 1fr);
-  @media screen and (max-width: 1200px) {
-    grid-template-columns: repeat(4, 1fr);
-  }
-  @media screen and (max-width: 767px) {
-    grid-template-columns: repeat(3, 1fr);
-  }
 `;
 const List = styled(motion.li)<{ bgimg: string }>`
   position: relative;
@@ -172,7 +223,15 @@ const List = styled(motion.li)<{ bgimg: string }>`
   background-image: url(${(props) => props.bgimg});
   background-size: cover;
   background-position: center center;
-  border-radius: 5px;
+  border-radius: 3px;
+  cursor: pointer;
+  &:first-of-type {
+    transform-origin: left center;
+  }
+  &:last-of-type {
+    transform-origin: right center;
+  }
+
   h4 {
     position: absolute;
     left: 0;
@@ -200,11 +259,45 @@ const Btn = styled.button`
 `;
 const BtnLeft = styled(Btn)`
   left: -50px;
-  /* background: linear-gradient(to right, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0)); */
 `;
 const BtnRight = styled(Btn)`
   right: -50px;
-  /* background: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.8)); */
 `;
-
+const Overlay = styled(motion.div)`
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #000;
+  z-index: 101;
+  cursor: pointer;
+`;
+const Popup = styled(motion.div)`
+  z-index: 102;
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  width: 700px;
+  height: calc(100vh - 200px);
+  background-color: #333;
+  border-radius: 5px;
+`;
+const PopupInner = styled.div<{ bgimg: string }>`
+  padding-top: 200px;
+  background-image: url(${(props) => props.bgimg});
+  background-position: center top;
+  background-size: cover;
+  img {
+    display: block;
+    max-width: 25%;
+  }
+  h3 {
+    font-size: 20px;
+    color: #333;
+  }
+`;
 export default Slider;

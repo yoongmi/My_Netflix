@@ -6,3 +6,10 @@ export const movieData = async () => {
   );
   return await data.json();
 };
+
+export const movieDetail = async (movieId: string | undefined) => {
+  const data = await fetch(
+    `${API_URL}/movie/${movieId}?api_key=${process.env.REACT_APP_API_KEY}`
+  );
+  return await data.json();
+};
