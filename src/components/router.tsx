@@ -4,6 +4,7 @@ import Home from "../routes/Home";
 import Movie from "../routes/Movie";
 import Search from "../routes/Search";
 import Tv from "../routes/Tv";
+import Footer from "./Footer";
 
 const HomeRouter = () => {
   return (
@@ -13,10 +14,11 @@ const HomeRouter = () => {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/movie" element={<Movie />} />
-          <Route path="/movie/:movieId" element={<Movie />} />
+          <Route path="/movie/:category/:movieId" element={<Movie />} />
           <Route path="/tv" element={<Tv />} />
           <Route path="/search" element={<Search />} />
         </Routes>
+        <Footer />
       </Router>
     </>
   );
