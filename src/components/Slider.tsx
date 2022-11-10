@@ -16,6 +16,7 @@ import PopupDetail from "./Popupdetail";
 interface IlistProps {
   content: Imovie[];
   title: string;
+  cate: string;
 }
 
 const slideVariants = {
@@ -37,11 +38,11 @@ const listVariants = {
   hover: {
     scale: 1.5,
     zIndex: 1,
-    transition: { delay: 0.3, type: "tween", duration: 0.5 },
+    transition: { delay: 0.3, type: "tween", duration: 0.3 },
   },
 };
 
-const Slider = ({ content, title }: IlistProps) => {
+const Slider = ({ content, title, cate }: IlistProps) => {
   //슬라이드 구현
   const slideOffset = 5;
   const slidePage = Math.floor(content.length / slideOffset) - 1;
@@ -73,8 +74,8 @@ const Slider = ({ content, title }: IlistProps) => {
 
   //팝업
   const history = useNavigate();
-  const popuphandle = (movieId: number) => {
-    history(`/movie/${movieId}`);
+  const popuphandle = (cate: string, movieId: number) => {
+    history(`/movie/${cate}/${movieId}`);
   };
 
   return (
@@ -112,12 +113,12 @@ const Slider = ({ content, title }: IlistProps) => {
               .map((movie) => (
                 <List
                   bgimg={ImgMakeSrc(movie.backdrop_path, "w500")}
-                  key={movie.id}
+                  key={cate + movie.id}
                   variants={listVariants}
                   initial="normal"
                   whileHover="hover"
-                  onClick={() => popuphandle(movie.id)}
-                  layoutId={movie.id + ""}
+                  onClick={() => popuphandle(cate, movie.id)}
+                  layoutId={cate + movie.id + ""}
                 >
                   <h4>{movie.title}</h4>
                 </List>
@@ -131,7 +132,7 @@ const Slider = ({ content, title }: IlistProps) => {
           <FontAwesomeIcon icon={faChevronRight} />
         </BtnRight>
       </SlideBox>
-      <PopupDetail content={content} />
+      <PopupDetail content={content} cate={cate} />
     </Container>
   );
 };
@@ -139,7 +140,7 @@ const Slider = ({ content, title }: IlistProps) => {
 const Container = styled.div`
   padding: 0 50px;
   box-sizing: border-box;
-  margin-bottom: 10px;
+  margin-bottom: 30px;
 `;
 const Title = styled.div`
   display: flex;
@@ -194,10 +195,10 @@ const List = styled(motion.li)<{ bgimg: string }>`
   border-radius: 3px;
   cursor: pointer;
   &:first-of-type {
-    transform-origin: left center;
+    transform-origin: left center !important;
   }
   &:last-of-type {
-    transform-origin: right center;
+    transform-origin: right center !important;
   }
 
   h4 {
@@ -206,9 +207,10 @@ const List = styled(motion.li)<{ bgimg: string }>`
     bottom: 0;
     width: 100%;
     padding: 10px 0;
-    background: rgba(0, 0, 0, 0.8);
+    background: ${(props) => props.theme.bgOpacity};
     text-align: center;
     font-size: 13px;
+    color: ${(props) => props.theme.txtColor};
   }
 `;
 const Btn = styled.button`

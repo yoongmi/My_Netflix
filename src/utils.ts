@@ -1,3 +1,7 @@
 export function ImgMakeSrc(url: string, size: string) {
-  return `https://image.tmdb.org/t/p/${size}/${url}`;
+  if (url !== null) {
+    return `https://image.tmdb.org/t/p/${size}/${url}`;
+  } else {
+    return `/no_image.jpeg`;
+  }
 }

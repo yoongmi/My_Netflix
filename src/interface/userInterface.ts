@@ -13,10 +13,14 @@ export interface Imovie {
   vote_count: number;
   vote_average: number;
 }
-
+interface Idates {
+  maximum: string;
+  minimum: string;
+}
 export interface Imovies {
   page: number;
   results: Imovie[];
+  dates: Idates[];
   total_results: number;
   total_pages: number;
 }
@@ -66,4 +70,28 @@ export interface ImovieDetail {
   video: boolean;
   vote_average: number;
   vote_count: number;
+}
+
+export interface ImovieSimilar {
+  page: number;
+  results: [
+    {
+      adult: boolean;
+      backdrop_path: string;
+      genre_ids: number[];
+      id: number;
+      original_language: string;
+      original_title: string;
+      overview: string;
+      release_date: string;
+      poster_path: string;
+      popularity: number;
+      title: string;
+      video: boolean;
+      vote_average: number;
+      vote_count: number;
+    }
+  ];
+  total_pages: 9;
+  total_results: 168;
 }

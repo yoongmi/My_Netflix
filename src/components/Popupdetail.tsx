@@ -7,20 +7,30 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmarkCircle } from "@fortawesome/free-solid-svg-icons";
 // 가져오는 data
 import { ImgMakeSrc } from "../utils";
-import { Imovie, ImovieDetail } from "../interface/userInterface";
-import { movieDetail } from "../api/userApi";
+import {
+  Imovie,
+  ImovieDetail,
+  ImovieSimilar,
+} from "../interface/userInterface";
+import { movieDetail, movieSimilar } from "../api/userApi";
 
 interface IlistProps {
   content: Imovie[];
+  cate: string;
 }
 
-const PopupDetail = ({ content }: IlistProps) => {
+const PopupDetail = ({ content, cate }: IlistProps) => {
   //팝업
   const history = useNavigate();
-  const popupMatch = useMatch(`/movie/:movieId`);
+  const popupMatch = useMatch(`/movie/${cate}/:movieId`);
   const { data: movieDetails } = useQuery<ImovieDetail | undefined>(
     ["movieDetail"],
     () => movieDetail(popupMatch?.params.movieId),
+    { enabled: !!popupMatch?.params.movieId }
+  );
+  const { data: movieSimilars } = useQuery<ImovieSimilar | undefined>(
+    ["movieSimilar"],
+    () => movieSimilar(popupMatch?.params.movieId),
     { enabled: !!popupMatch?.params.movieId }
   );
 
@@ -41,7 +51,7 @@ const PopupDetail = ({ content }: IlistProps) => {
               animate={{ opacity: 0.4 }}
               exit={{ opacity: 0 }}
             />
-            <Popup layoutId={popupMatch.params.movieId + ""}>
+            <Popup layoutId={cate + popupMatch.params.movieId + ""}>
               {popupMovie && (
                 <PopupInner>
                   <i className="exit_btn" onClick={popupClose}>
@@ -112,6 +122,32 @@ const PopupDetail = ({ content }: IlistProps) => {
                       </div>
                     </div>
                   </PopupInfo>
+                  <SimilarList>
+                    {movieSimilars && (
+                      <>
+                        <h3>비슷한 영화</h3>
+                        <ListBox>
+                          {movieSimilars.results.map((item, i) => {
+                            if (i > 10) {
+                              return (
+                                <List key={i}>
+                                  <img
+                                    src={ImgMakeSrc(item.poster_path, "w500")}
+                                    alt={item.title}
+                                  />
+                                  <h4>
+                                    {item.title} (
+                                    {item.release_date.slice(0, 4)})
+                                  </h4>
+                                  <div className="desc">{item.overview}</div>
+                                </List>
+                              );
+                            }
+                          })}
+                        </ListBox>
+                      </>
+                    )}
+                  </SimilarList>
                 </PopupInner>
               )}
             </Popup>
@@ -145,7 +181,7 @@ const Popup = styled(motion.div)`
   width: 800px;
   max-width: 90%;
   max-height: calc(100vh - 100px);
-  background-color: #000;
+  background-color: ${(props) => props.theme.bgDark};
   border-radius: 5px;
 `;
 const PopupInner = styled.div`
@@ -171,11 +207,7 @@ const PopupInner = styled.div`
       width: 100%;
       height: 100%;
       z-index: 1;
-      background: linear-gradient(
-        to bottom,
-        rgba(0, 0, 0, 0.5),
-        rgba(0, 0, 0, 1)
-      );
+      background: ${(props) => props.theme.bgGradient};
     }
     img {
       width: 100%;
@@ -189,7 +221,7 @@ const PopupInner = styled.div`
     max-width: 25%;
     margin: -40% auto 10px;
     border-radius: 5px;
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 25px ${(props) => props.theme.bgOpacityback};
   }
 `;
 const PopupInfo = styled.div`
@@ -250,6 +282,47 @@ const PopupInfo = styled.div`
         }
       }
     }
+  }
+`;
+const SimilarList = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  padding: 30px 25px 10px;
+  box-sizing: border-box;
+  h3 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    font-weight: bold;
+  }
+`;
+const ListBox = styled.ul`
+  display: flex;
+  flex-wrap: wrap;
+`;
+const List = styled.li`
+  overflow: hidden;
+  width: calc(33% - 20px);
+  margin: 10px;
+  background-color: ${(props) => props.theme.bgColor};
+  border-radius: 5px;
+  padding: 5px 5px 8px;
+  img {
+    border-radius: 5px;
+    width: 100%;
+  }
+  h4 {
+    padding: 5px 0 10px;
+    font-size: 18px;
+    font-weight: bold;
+  }
+  .desc {
+    line-height: 1.1;
+    font-size: 12px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
   }
 `;
 export default PopupDetail;

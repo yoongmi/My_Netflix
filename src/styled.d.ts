@@ -7,5 +7,10 @@ declare module "styled-components" {
     bgColor: string;
     cardColor: string;
     txtColor: string;
+    bgOpacity: string;
+    bgDark: string;
+    bgOpacityback: string;
+    bgGradient: string;
+    bgGradient2: string;
   }
 }
