@@ -13,8 +13,6 @@ import {
 } from "../api/userApi";
 import { Imovies } from "../interface/userInterface";
 import Slider from "../components/Slider";
-import { useNavigate } from "react-router-dom";
-import PopupDetail from "../components/Popupdetail";
 
 const Movie = () => {
   const { data: popularData, isLoading } = useQuery<Imovies>(
@@ -30,11 +28,7 @@ const Movie = () => {
   const { data: commingData } = useQuery<Imovies>(["movie", "coming"], () =>
     comeMovieData()
   );
-  //팝업
-  const history = useNavigate();
-  const popuphandle = () => {
-    history(`/movie/banner/${popularData?.results[0].id}`);
-  };
+
   return (
     <>
       {isLoading ? (
@@ -56,7 +50,7 @@ const Movie = () => {
                 <FontAwesomeIcon icon={faPlay} />
                 Play
               </button>
-              <button onClick={() => popuphandle()}>
+              <button>
                 <FontAwesomeIcon icon={faCircleInfo} />
                 Detail
               </button>
