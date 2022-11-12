@@ -17,6 +17,7 @@ interface IlistProps {
   content: Imovie[];
   title: string;
   cate: string;
+  video: string;
 }
 
 const slideVariants = {
@@ -42,7 +43,7 @@ const listVariants = {
   },
 };
 
-const Slider = ({ content, title, cate }: IlistProps) => {
+const Slider = ({ content, title, cate, video }: IlistProps) => {
   //슬라이드 구현
   const slideOffset = 5;
   const slidePage = Math.floor(content.length / slideOffset) - 1;
@@ -75,7 +76,11 @@ const Slider = ({ content, title, cate }: IlistProps) => {
   //팝업
   const history = useNavigate();
   const popuphandle = (cate: string, movieId: number) => {
-    history(`/movie/${cate}/${movieId}`);
+    if (video === "movie") {
+      history(`/movie/${cate}/${movieId}`);
+    } else {
+      history(`/tv/${cate}/${movieId}`);
+    }
   };
 
   return (
@@ -120,7 +125,7 @@ const Slider = ({ content, title, cate }: IlistProps) => {
                   onClick={() => popuphandle(cate, movie.id)}
                   layoutId={cate + movie.id + ""}
                 >
-                  <h4>{movie.title}</h4>
+                  <h4>{video === "movie" ? movie.title : movie.name}</h4>
                 </List>
               ))}
           </ListBox>
@@ -132,7 +137,7 @@ const Slider = ({ content, title, cate }: IlistProps) => {
           <FontAwesomeIcon icon={faChevronRight} />
         </BtnRight>
       </SlideBox>
-      <PopupDetail content={content} cate={cate} />
+      <PopupDetail content={content} cate={cate} video={video} />
     </Container>
   );
 };

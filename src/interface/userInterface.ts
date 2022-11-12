@@ -12,6 +12,9 @@ export interface Imovie {
   popularity: number;
   vote_count: number;
   vote_average: number;
+  name: string;
+  original_name: string;
+  first_air_date: string;
 }
 interface Idates {
   maximum: string;
@@ -70,6 +73,7 @@ export interface ImovieDetail {
   video: boolean;
   vote_average: number;
   vote_count: number;
+  name: string;
 }
 
 export interface ImovieSimilar {

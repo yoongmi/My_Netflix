@@ -16,6 +16,7 @@ const HomeRouter = () => {
           <Route path="/movie" element={<Movie />} />
           <Route path="/movie/:category/:movieId" element={<Movie />} />
           <Route path="/tv" element={<Tv />} />
+          <Route path="/tv/:category/:movieId" element={<Tv />} />
           <Route path="/search" element={<Search />} />
         </Routes>
         <Footer />

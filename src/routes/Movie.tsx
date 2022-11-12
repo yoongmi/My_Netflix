@@ -60,21 +60,25 @@ const Movie = () => {
             title="가장 인기있는 영화"
             content={popularData ? popularData.results : []}
             cate="popular"
+            video="movie"
           />
           <Slider
             title="지금 상영중인 영화"
             content={nowplayData ? nowplayData?.results : []}
             cate="nowplay"
+            video="movie"
           />
           <Slider
             title="평점이 높은 영화"
             content={topratedData ? topratedData?.results : []}
             cate="toprated"
+            video="movie"
           />
           <Slider
             title="개봉 예정 영화"
             content={commingData ? commingData?.results : []}
             cate="comming"
+            video="movie"
           />
         </>
       )}
