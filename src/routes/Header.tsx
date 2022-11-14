@@ -10,7 +10,6 @@ const Header = () => {
   const themeState = useRecoilValue(ThemeAtom);
   const themeSetState = useSetRecoilState(ThemeAtom);
   const themeChange = () => themeSetState((prev) => !prev);
-  const homeMatch = useMatch("/");
   const movieMatch = useMatch("/movie");
   const tvMatch = useMatch("/tv");
   const searchMatch = useMatch("/search");
@@ -21,9 +20,6 @@ const Header = () => {
           <img src="/logo.png" alt="logo" />
         </h1>
         <ul>
-          <Li isActive={homeMatch !== null}>
-            <Link to="/">home{homeMatch && <Circle layoutId="circle" />}</Link>
-          </Li>
           <Li isActive={movieMatch !== null}>
             <Link to="/movie">
               Movie{movieMatch && <Circle layoutId="circle" />}

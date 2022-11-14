@@ -46,7 +46,6 @@ const PopupDetail = ({ content, cate, video }: IlistProps) => {
     () => movieVideo(popupMatch?.params.movieId),
     { enabled: !!popupMatch?.params.movieId }
   );
-  console.log(movieVideos);
 
   const popupMatchtv = useMatch(`/tv/${cate}/:movieId`);
   const { data: tvDetails } = useQuery<ItvDetail | undefined>(
