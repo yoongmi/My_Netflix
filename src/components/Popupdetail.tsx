@@ -11,15 +11,23 @@ import {
   Imovie,
   ImovieDetail,
   ImovieSimilar,
+  ImovieVideo,
+  ItvDetail,
 } from "../interface/userInterface";
-import { movieDetail, movieSimilar } from "../api/userApi";
+import {
+  movieDetail,
+  movieSimilar,
+  tvDetail,
+  movieVideo,
+} from "../api/userApi";
 
 interface IlistProps {
   content: Imovie[];
   cate: string;
+  video: string;
 }
 
-const PopupDetail = ({ content, cate }: IlistProps) => {
+const PopupDetail = ({ content, cate, video }: IlistProps) => {
   //팝업
   const history = useNavigate();
   const popupMatch = useMatch(`/movie/${cate}/:movieId`);
@@ -33,17 +41,126 @@ const PopupDetail = ({ content, cate }: IlistProps) => {
     () => movieSimilar(popupMatch?.params.movieId),
     { enabled: !!popupMatch?.params.movieId }
   );
+  const { data: movieVideos } = useQuery<ImovieVideo | undefined>(
+    ["movieVideos"],
+    () => movieVideo(popupMatch?.params.movieId),
+    { enabled: !!popupMatch?.params.movieId }
+  );
+  console.log(movieVideos);
+
+  const popupMatchtv = useMatch(`/tv/${cate}/:movieId`);
+  const { data: tvDetails } = useQuery<ItvDetail | undefined>(
+    ["tvDetails"],
+    () => tvDetail(popupMatchtv?.params.movieId),
+    { enabled: !!popupMatchtv?.params.movieId }
+  );
 
   const popupClose = () => {
-    history(`/movie`);
+    if (video === "movie") {
+      history(`/movie`);
+    } else {
+      history(`/tv`);
+    }
   };
   const popupMovie =
     popupMatch?.params.movieId &&
     content.find((movie) => String(movie.id) === popupMatch.params.movieId);
+  const popupTv =
+    popupMatchtv?.params.movieId &&
+    content.find((movie) => String(movie.id) === popupMatchtv.params.movieId);
 
   return (
     <>
       <AnimatePresence>
+        {popupMatchtv && (
+          <>
+            <Overlay
+              onClick={popupClose}
+              animate={{ opacity: 0.4 }}
+              exit={{ opacity: 0 }}
+            />
+            <Popup layoutId={cate + popupMatchtv.params.movieId + ""}>
+              {popupTv && (
+                <PopupInner>
+                  <i className="exit_btn" onClick={popupClose}>
+                    <FontAwesomeIcon icon={faXmarkCircle} />
+                  </i>
+                  <div className="back">
+                    <img
+                      src={ImgMakeSrc(popupTv.backdrop_path, "original")}
+                      alt={popupTv.name}
+                      className="back_img"
+                    />
+                  </div>
+                  <img
+                    src={ImgMakeSrc(popupTv.poster_path, "w500")}
+                    alt={popupTv.name}
+                    className="poster"
+                  />
+                  <PopupInfo>
+                    <h3>{popupTv.name}</h3>
+                    <div className="infoArea">
+                      <div className="left">
+                        <p>
+                          <span>{popupTv.original_language.toUpperCase()}</span>
+                          <b>{tvDetails?.last_air_date.slice(0, 4)}</b> {" ∙ "}
+                          ⭐️ {popupTv.vote_average} {" ∙ "}
+                          시즌 {tvDetails?.number_of_seasons}
+                          {" ∙ "}
+                          에피소드 {tvDetails?.seasons.at(-1)?.episode_count} 개
+                        </p>
+                        <p>{tvDetails?.overview}</p>
+                      </div>
+                      <div className="right">
+                        {tvDetails?.production_companies.length !== 0 && (
+                          <p>
+                            <span>제작사 : </span>
+                            {tvDetails?.production_companies.map((item) => {
+                              const size: number =
+                                tvDetails?.production_companies.length - 1;
+                              return tvDetails?.production_companies[size]
+                                .name === item.name
+                                ? item.name
+                                : item.name + ",";
+                            })}
+                          </p>
+                        )}
+                        <p>
+                          <span>장르 : </span>
+                          {tvDetails?.genres.map((item) => {
+                            const size: number = tvDetails?.genres.length - 1;
+                            return tvDetails?.genres[size].name === item.name
+                              ? item.name
+                              : item.name + "∙";
+                          })}
+                        </p>
+                      </div>
+                    </div>
+                  </PopupInfo>
+                  <SimilarList>
+                    {tvDetails?.seasons && (
+                      <>
+                        <h3>시즌 </h3>
+                        <ListBox>
+                          {tvDetails.seasons.map((item) => (
+                            <List key={item.id}>
+                              <img
+                                src={ImgMakeSrc(item.poster_path, "w500")}
+                                alt={item.name}
+                              />
+                              <h4>{item.name}</h4>
+                              <div className="desc">{item.overview}</div>
+                            </List>
+                          ))}
+                        </ListBox>
+                      </>
+                    )}
+                  </SimilarList>
+                </PopupInner>
+              )}
+            </Popup>
+          </>
+        )}
         {popupMatch && (
           <>
             <Overlay
@@ -122,6 +239,25 @@ const PopupDetail = ({ content, cate }: IlistProps) => {
                       </div>
                     </div>
                   </PopupInfo>
+                  <SimilarList>
+                    {movieVideos?.results.length !== 0 && (
+                      <>
+                        <h3>Video</h3>
+                        <ListBox>
+                          {movieVideos?.results.map((item) => (
+                            <List className="grid2" key={item.id}>
+                              <iframe
+                                src={`https://www.youtube.com/embed/${item.key}`}
+                                title={item.name}
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                              ></iframe>
+                              <h4>{item.name}</h4>
+                            </List>
+                          ))}
+                        </ListBox>
+                      </>
+                    )}
+                  </SimilarList>
                   <SimilarList>
                     {movieSimilars && (
                       <>
@@ -230,6 +366,7 @@ const PopupInfo = styled.div`
   padding: 10px 25px;
   box-sizing: border-box;
   h3 {
+    display: block;
     font-size: 30px;
     font-weight: bold;
     color: #fff;
@@ -285,8 +422,6 @@ const PopupInfo = styled.div`
   }
 `;
 const SimilarList = styled.div`
-  display: flex;
-  flex-wrap: wrap;
   padding: 30px 25px 10px;
   box-sizing: border-box;
   h3 {
@@ -306,6 +441,13 @@ const List = styled.li`
   background-color: ${(props) => props.theme.bgColor};
   border-radius: 5px;
   padding: 5px 5px 8px;
+  &.grid2 {
+    width: calc(50% - 20px);
+  }
+  iframe {
+    width: 100%;
+    height: 200px;
+  }
   img {
     border-radius: 5px;
     width: 100%;

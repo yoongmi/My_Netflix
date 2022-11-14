@@ -42,6 +42,13 @@ export const movieSimilar = async (movieId: string | undefined) => {
   return await data.json();
 };
 
+export const movieVideo = async (movieId: string | undefined) => {
+  const data = await fetch(
+    `${API_URL}/movie/${movieId}/videos?api_key=${process.env.REACT_APP_API_KEY}&language=ko-KR`
+  );
+  return await data.json();
+};
+
 // tv
 export const tvData = async () => {
   const data = await fetch(
@@ -52,14 +59,14 @@ export const tvData = async () => {
 
 export const onairData = async () => {
   const data = await fetch(
-    `${API_URL}/tv/on_the_air?api_key=${process.env.REACT_APP_API_KEY}`
+    `${API_URL}/tv/on_the_air?api_key=${process.env.REACT_APP_API_KEY}&language=ko-KR`
   );
   return await data.json();
 };
 
 export const toptvData = async () => {
   const data = await fetch(
-    `${API_URL}/tv/top_rated?api_key=${process.env.REACT_APP_API_KEY}`
+    `${API_URL}/tv/top_rated?api_key=${process.env.REACT_APP_API_KEY}&language=ko-KR`
   );
   return await data.json();
 };
@@ -70,6 +77,7 @@ export const airingData = async () => {
   );
   return await data.json();
 };
+
 export const tvDetail = async (movieId: string | undefined) => {
   const data = await fetch(
     `${API_URL}/tv/${movieId}?api_key=${process.env.REACT_APP_API_KEY}&language=ko-KR`

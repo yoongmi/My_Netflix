@@ -23,7 +23,6 @@ const Tv = () => {
   const { data: airingtvData } = useQuery<Imovies>(["movie", "airing"], () =>
     airingData()
   );
-  console.log(popularData);
   return (
     <>
       {isLoading ? (

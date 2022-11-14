@@ -73,7 +73,6 @@ export interface ImovieDetail {
   video: boolean;
   vote_average: number;
   vote_count: number;
-  name: string;
 }
 
 export interface ImovieSimilar {
@@ -98,4 +97,50 @@ export interface ImovieSimilar {
   ];
   total_pages: 9;
   total_results: 168;
+}
+interface Ivideo {
+  id: string;
+  key: string;
+  name: string;
+}
+export interface ImovieVideo {
+  id: number;
+  results: Ivideo[];
+}
+
+interface ItvCompany {
+  id: number;
+  name: string;
+  logo_path: string;
+}
+interface ItvSeason {
+  air_date: string;
+  episode_count: number;
+  id: number;
+  name: string;
+  overview: string;
+  poster_path: string;
+  season_number: number;
+}
+export interface ItvDetail {
+  adult: boolean;
+  backdrop_path: string;
+  first_air_date: string;
+  homepage: string;
+  id: number;
+  in_production: boolean;
+  last_air_date: string;
+  name: string;
+  number_of_episodes: number;
+  number_of_seasons: number;
+  original_language: string;
+  original_name: string;
+  overview: string;
+  popularity: number;
+  poster_path: string;
+  vote_average: number;
+  vote_count: number;
+  genres: ImovieDetailGenres[];
+  production_companies: ItvCompany[];
+  seasons: ItvSeason[];
 }
