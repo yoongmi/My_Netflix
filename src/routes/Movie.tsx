@@ -109,6 +109,11 @@ const BannerInfo = styled.div`
   p {
     margin: 10px 0 30px;
     font-size: 20px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 4;
   }
   button {
     padding: 10px 25px;

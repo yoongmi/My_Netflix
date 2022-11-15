@@ -49,7 +49,7 @@ footer, header, hgroup, menu, nav, section {
   box-sizing:border-box;
 }
 body {
-	line-height: 1;
+	line-height: 1.2;
   background-color:${(props) => props.theme.bgColor};
   color:${(props) => props.theme.txtColor}
 }
