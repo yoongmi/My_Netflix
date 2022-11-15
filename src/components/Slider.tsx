@@ -14,6 +14,7 @@ import { Imovie } from "../interface/userInterface";
 import PopupDetail from "./Popupdetail";
 
 interface IlistProps {
+  page?: string;
   content: Imovie[];
   title: string;
   cate: string;
@@ -43,7 +44,7 @@ const listVariants = {
   },
 };
 
-const Slider = ({ content, title, cate, video }: IlistProps) => {
+const Slider = ({ page, content, title, cate, video }: IlistProps) => {
   //슬라이드 구현
   const slideOffset = 5;
   const slidePage = Math.floor(content.length / slideOffset) - 1;
@@ -76,10 +77,12 @@ const Slider = ({ content, title, cate, video }: IlistProps) => {
   //팝업
   const history = useNavigate();
   const popuphandle = (cate: string, movieId: number) => {
-    if (video === "movie") {
+    if (cate === "search") {
+      history(`/search/${cate}/${movieId}${window.location.search}`);
+    } else if (video === "movie") {
       history(`/movie/${cate}/${movieId}`);
     } else {
-      history(`/tv/${cate}/${movieId}`);
+      history(`/tv/${cate}/${movieId}${window.location.search}`);
     }
   };
 
@@ -95,49 +98,60 @@ const Slider = ({ content, title, cate, video }: IlistProps) => {
           ))}
         </p>
       </Title>
-      <SlideBox>
-        <AnimatePresence
-          onExitComplete={slideToggle}
-          initial={false}
-          custom={slideDirection}
-        >
-          <ListBox
-            variants={slideVariants}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-            key={slideIndex}
-            custom={slideDirection}
-            transition={{ type: "tween", duration: 1 }}
-          >
-            {content
-              .slice(
-                slideOffset * slideIndex,
-                slideOffset * slideIndex + slideOffset
-              )
-              .map((movie) => (
-                <List
-                  bgimg={ImgMakeSrc(movie.backdrop_path, "w500")}
-                  key={cate + movie.id}
-                  variants={listVariants}
-                  initial="normal"
-                  whileHover="hover"
-                  onClick={() => popuphandle(cate, movie.id)}
-                  layoutId={cate + movie.id + ""}
-                >
-                  <h4>{video === "movie" ? movie.title : movie.name}</h4>
-                </List>
-              ))}
-          </ListBox>
-        </AnimatePresence>
-        <BtnLeft onClick={slidedecrease}>
-          <FontAwesomeIcon icon={faChevronLeft} />
-        </BtnLeft>
-        <BtnRight onClick={slideIncrease}>
-          <FontAwesomeIcon icon={faChevronRight} />
-        </BtnRight>
-      </SlideBox>
-      <PopupDetail content={content} cate={cate} video={video} />
+      {content.length > 0 ? (
+        <>
+          <SlideBox>
+            <AnimatePresence
+              onExitComplete={slideToggle}
+              initial={false}
+              custom={slideDirection}
+            >
+              <ListBox
+                variants={slideVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                key={slideIndex}
+                custom={slideDirection}
+                transition={{ type: "tween", duration: 1 }}
+              >
+                {content
+                  .slice(
+                    slideOffset * slideIndex,
+                    slideOffset * slideIndex + slideOffset
+                  )
+                  .map((movie) => (
+                    <List
+                      bgimg={ImgMakeSrc(movie.backdrop_path, "w500")}
+                      key={cate + movie.id}
+                      variants={listVariants}
+                      initial="normal"
+                      whileHover="hover"
+                      onClick={() => popuphandle(cate, movie.id)}
+                      layoutId={cate + movie.id + ""}
+                    >
+                      <h4>{video === "movie" ? movie.title : movie.name}</h4>
+                    </List>
+                  ))}
+              </ListBox>
+            </AnimatePresence>
+            <BtnLeft onClick={slidedecrease}>
+              <FontAwesomeIcon icon={faChevronLeft} />
+            </BtnLeft>
+            <BtnRight onClick={slideIncrease}>
+              <FontAwesomeIcon icon={faChevronRight} />
+            </BtnRight>
+          </SlideBox>
+          <PopupDetail
+            page={page}
+            content={content}
+            cate={cate}
+            video={video}
+          />
+        </>
+      ) : (
+        <p className="no_data">검색 결과 없습니다.</p>
+      )}
     </Container>
   );
 };
@@ -146,6 +160,12 @@ const Container = styled.div`
   padding: 0 50px;
   box-sizing: border-box;
   margin-bottom: 30px;
+  p.no_data {
+    padding: 30px 0;
+    text-align: center;
+    background-color: ${(props) => props.theme.bgOpacity};
+    border-radius: 5px;
+  }
 `;
 const Title = styled.div`
   display: flex;

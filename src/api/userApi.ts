@@ -84,3 +84,23 @@ export const tvDetail = async (movieId: string | undefined) => {
   );
   return await data.json();
 };
+
+//search
+export const searchMovie = async (keyword: string | null) => {
+  const data = await fetch(
+    `${API_URL}/search/movie?api_key=${process.env.REACT_APP_API_KEY}&language=ko-KR&query=${keyword}`
+  );
+  return await data.json();
+};
+export const searchtv = async (keyword: string | null) => {
+  const data = await fetch(
+    `${API_URL}/search/tv?api_key=${process.env.REACT_APP_API_KEY}&language=ko-KR&query=${keyword}`
+  );
+  return await data.json();
+};
+export const searchpeople = async (keyword: string | null) => {
+  const data = await fetch(
+    `${API_URL}/search/person?api_key=${process.env.REACT_APP_API_KEY}&language=ko-KR&query=${keyword}`
+  );
+  return await data.json();
+};

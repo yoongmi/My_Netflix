@@ -22,40 +22,43 @@ import {
 } from "../api/userApi";
 
 interface IlistProps {
+  page?: string;
   content: Imovie[];
   cate: string;
   video: string;
 }
 
-const PopupDetail = ({ content, cate, video }: IlistProps) => {
+const PopupDetail = ({ page, content, cate, video }: IlistProps) => {
   //팝업
   const history = useNavigate();
-  const popupMatch = useMatch(`/movie/${cate}/:movieId`);
+  const popupMatch = useMatch(`/${page}/${cate}/:movieId`);
   const { data: movieDetails } = useQuery<ImovieDetail | undefined>(
-    ["movieDetail"],
+    ["movieDetail", popupMatch?.params.movieId],
     () => movieDetail(popupMatch?.params.movieId),
     { enabled: !!popupMatch?.params.movieId }
   );
   const { data: movieSimilars } = useQuery<ImovieSimilar | undefined>(
-    ["movieSimilar"],
+    ["movieSimilar", popupMatch?.params.movieId],
     () => movieSimilar(popupMatch?.params.movieId),
     { enabled: !!popupMatch?.params.movieId }
   );
   const { data: movieVideos } = useQuery<ImovieVideo | undefined>(
-    ["movieVideos"],
+    ["movieVideos", popupMatch?.params.movieId],
     () => movieVideo(popupMatch?.params.movieId),
     { enabled: !!popupMatch?.params.movieId }
   );
 
   const popupMatchtv = useMatch(`/tv/${cate}/:movieId`);
   const { data: tvDetails } = useQuery<ItvDetail | undefined>(
-    ["tvDetails"],
+    ["tvDetails", popupMatch?.params.movieId],
     () => tvDetail(popupMatchtv?.params.movieId),
     { enabled: !!popupMatchtv?.params.movieId }
   );
 
   const popupClose = () => {
-    if (video === "movie") {
+    if (cate === "search" || cate === "search2") {
+      history(`/search${window.location.search}`);
+    } else if (video === "movie") {
       history(`/movie`);
     } else {
       history(`/tv`);
