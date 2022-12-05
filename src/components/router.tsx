@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Header from "../routes/Header";
 import Movie from "../routes/Movie";
 import Search from "../routes/Search";
@@ -9,7 +9,7 @@ import Footer from "./Footer";
 const HomeRouter = () => {
   return (
     <>
-      <Router>
+      <BrowserRouter basename="/My_Netflix">
         <Header />
         <Routes>
           <Route path="/" element={<Home />} />
@@ -22,7 +22,7 @@ const HomeRouter = () => {
           <Route path="/tv/search2/:movieId" element={<Search />} />
         </Routes>
         <Footer />
-      </Router>
+      </BrowserRouter>
     </>
   );
 };

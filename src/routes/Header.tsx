@@ -17,7 +17,7 @@ const Header = () => {
     <Navigator>
       <Nav>
         <h1>
-          <img src="/logo.png" alt="logo" />
+          <img src={"/My_Netflix/logo.png"} alt="logo" />
         </h1>
         <ul>
           <Li isActive={movieMatch !== null}>
@@ -75,9 +75,9 @@ const Nav = styled.nav`
 const Li = styled.li<{ isActive: boolean }>`
   position: relative;
   font-weight: bold;
-  color: ${(props) => (props.isActive ? "#009688" : "")};
   transition: all 0.3s;
   a {
+    color: ${(props) => (props.isActive ? "#009688" : "#fff")};
     padding: 10px;
   }
 `;
