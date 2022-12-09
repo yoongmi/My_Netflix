@@ -5,6 +5,7 @@ import Search from "../routes/Search";
 import Tv from "../routes/Tv";
 import Home from "../routes/Home";
 import Footer from "./Footer";
+import NotFound from "./NotFound";
 
 const HomeRouter = () => {
   return (
@@ -20,6 +21,7 @@ const HomeRouter = () => {
           <Route path="/search" element={<Search />} />
           <Route path="/search/:category/:movieId" element={<Search />} />
           <Route path="/tv/search2/:movieId" element={<Search />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
         <Footer />
       </BrowserRouter>

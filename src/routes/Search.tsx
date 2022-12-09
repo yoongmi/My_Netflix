@@ -20,6 +20,7 @@ const Search = () => {
   const history = useNavigate();
   const { register, handleSubmit } = useForm<IForm>();
   const submit = (data: IForm) => {
+    if (data.keyword.length === 0) return alert("검색어를 입력해주세요");
     history(`/search?cate=${data.cate}&keyword=${data.keyword}`);
   };
 
@@ -44,7 +45,6 @@ const Search = () => {
     { enabled: !!keyword }
   );
   const number = peopleData?.results.length;
-  console.log(number);
   return (
     <>
       <SearchForm>
